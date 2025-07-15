@@ -251,7 +251,7 @@ def determineCommitId() {
  */
 static def projectToJUnitXmlPath(project) {
   var p = project
-  var projectNames =
+  var projectNames = []
   while (p!= null) {
     projectNames.push(p.name)
     p = p.parent
