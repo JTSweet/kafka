@@ -5,12 +5,14 @@ FROM ibm-semeru-runtimes:open-21.0.8_9-jdk-jammy
 LABEL maintainer="TSweet"
 LABEL description="Build environment for Apache Kafka with IBM Semeru JDK 21"
 
+# Set an environment variable to increase Gradle's heap size.
+# This gives the main Gradle process 2GB of heap memory.
+ENV GRADLE_OPTS="-Xmx2g"
+
 # Set the working directory inside the container
 WORKDIR /app
 
-# CORRECTED COMMAND:
-# Install certificate authorities and GPG tools first to ensure
-# the package manager can securely access repositories, then install git.
+# Install certificate authorities, GPG tools, and git
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     gnupg \
@@ -21,5 +23,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . .
 
 # Set the command to run when the container starts.
-# This executes the Gradle build inside the container with our proven flags.
+# Gradle will automatically pick up the GRADLE_OPTS environment variable.
 CMD ["./gradlew", "clean", "releaseTarGz", "-x", "test", "-x", "integrationTest", "--no-build-cache", "--no-configuration-cache", "--no-daemon"]
